@@ -3,11 +3,12 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
+
         Scanner sc = new Scanner(System.in);
         Tabelas tabelas = new Tabelas();
 
         System.out.println("======================================");
-        System.out.println("      SIMULADOR DE PILHAS (JAVA)      ");
+        System.out.println("      SIMULADOR DE PILHAS     ");
         System.out.println("======================================\n");
 
         boolean continuar = true;
@@ -20,16 +21,16 @@ public class Main {
                         m.getId(), m.getNome(), m.getSimbolo(), m.getPotencialReducao());
             }
 
-            System.out.println("\nEscolha o PRIMEIRO metal (ânodo ou cátodo): ");
+            System.out.println("\nEscolha o PRIMEIRO metal: ");
             int id1 = sc.nextInt();
             Metal metal1 = tabelas.getMetalPorId(id1);
 
-            System.out.println("Escolha o SEGUNDO metal (ânodo ou cátodo): ");
+            System.out.println("Escolha o SEGUNDO metal: ");
             int id2 = sc.nextInt();
             Metal metal2 = tabelas.getMetalPorId(id2);
 
             if (metal1 == null || metal2 == null) {
-                System.out.println("\nEscolha inválida! Tente novamente.\n");
+                System.out.println("\nEscolha inválida. Tente novamente.\n");
                 continue;
             }
 
@@ -42,18 +43,26 @@ public class Main {
             System.out.printf("%s (%s) → E° = %.2f V\n\n",
                     metal2.getNome(), metal2.getSimbolo(), metal2.getPotencialReducao());
 
-            if (!resultado.funciona) {
-                System.out.println("A pilha NÃO funciona pois as espécies são iguais.\n");
-            } else {
+            if (resultado.anodo == null || resultado.catodo == null) {
+                System.out.println("A pilha NÃO funciona, pois as espécies são iguais.\n");
+            } 
+            else {
                 System.out.printf("CÁTODO (reduz): %s (%s)\n",
                         resultado.catodo.getNome(), resultado.catodo.getSimbolo());
                 System.out.printf("ÂNODO (oxida):  %s (%s)\n\n",
                         resultado.anodo.getNome(), resultado.anodo.getSimbolo());
 
-                System.out.printf("⚡ POTENCIAL DA PILHA: %.2f V ⚡\n\n",
+                System.out.printf("POTENCIAL DA PILHA (E°pilha) = %.2f V\n\n",
                         resultado.potencialPilha);
 
-                System.out.println("REAÇÕES:\n");
+
+                if (resultado.espontanea) {
+                    System.out.println("A pilha é ESPONTÂNEA.");
+                } else {
+                    System.out.println("A pilha NÃO é espontânea (potencial negativo).");
+                }
+
+                System.out.println("\nREAÇÕES BALANCEADAS:\n");
                 System.out.println(PilhaCalculator.montarReacao(
                         resultado.anodo, resultado.catodo));
             }

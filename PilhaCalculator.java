@@ -1,47 +1,70 @@
-// PilhaCalculator.java
 public class PilhaCalculator {
 
     public static class ResultadoPilha {
-        public final Metal anodo;    
-        public final Metal catodo;   
+        public final Metal anodo;
+        public final Metal catodo;
         public final double potencialPilha;
-        public final boolean funciona; 
-        public ResultadoPilha(Metal anodo, Metal catodo, double potencialPilha, boolean funciona) {
+        public final boolean espontanea;
+
+        public ResultadoPilha(Metal anodo, Metal catodo, double potencialPilha, boolean espontanea) {
             this.anodo = anodo;
             this.catodo = catodo;
             this.potencialPilha = potencialPilha;
-            this.funciona = funciona;
+            this.espontanea = espontanea;
         }
     }
 
-
     public static ResultadoPilha avaliarPilha(Metal m1, Metal m2) {
-        if (m1 == null || m2 == null) throw new IllegalArgumentException("Metais não podem ser nulos");
 
         if (m1.getId() == m2.getId()) {
-            return new ResultadoPilha(null, null, 0.0, false);
+            return new ResultadoPilha(null, null, 0, false);
         }
 
-        Metal catodo = m1.getPotencialReducao() >= m2.getPotencialReducao() ? m1 : m2;
+        Metal catodo = m1.getPotencialReducao() > m2.getPotencialReducao() ? m1 : m2;
         Metal anodo = (catodo == m1) ? m2 : m1;
 
         double potencial = catodo.getPotencialReducao() - anodo.getPotencialReducao();
-        if (potencial < 0) potencial = Math.abs(potencial); 
-        return new ResultadoPilha(anodo, catodo, potencial, true);
+        boolean espontanea = potencial > 0;
+
+        return new ResultadoPilha(anodo, catodo, potencial, espontanea);
+    }
+
+    private static int mdc(int a, int b) {
+        while (b != 0) {
+            int resto = a % b;
+            a = b;
+            b = resto;
+        }
+        return a;
+    }
+
+    private static int mmc(int a, int b) {
+        return (a * b) / mdc(a, b);
     }
 
     public static String montarReacao(Metal anodo, Metal catodo) {
-        if (anodo == null || catodo == null) return "A pilha não funciona (mesma espécie escolhida).";
 
-        String s = "";
-        s += "ÂNODO (oxidação):\n";
-        s += String.format("  %s(s) → %s²⁺(aq) + 2e⁻\n", anodo.getSimbolo(), anodo.getSimbolo());
-        s += "\nCÁTODO (redução):\n";
-        s += String.format("  %s²⁺(aq) + 2e⁻ → %s(s)\n", catodo.getSimbolo(), catodo.getSimbolo());
-        s += "\nREAÇÃO GLOBAL:\n";
-        s += String.format("  %s(s) + %s²⁺(aq) → %s²⁺(aq) + %s(s)\n",
-                anodo.getSimbolo(), catodo.getSimbolo(),
-                anodo.getSimbolo(), catodo.getSimbolo());
-        return s;
+        int n1 = anodo.getValencia();
+        int n2 = catodo.getValencia();
+        int mmc = mmc(n1, n2);
+
+        int cAnodo = mmc / n1;
+        int cCatodo = mmc / n2;
+
+        String an = cAnodo + anodo.getSimbolo() + " → "
+                + cAnodo + anodo.getSimbolo() + "⁺" + n1 + " + "
+                + mmc + "e⁻";
+
+        String cat = cCatodo + catodo.getSimbolo() + "⁺" + n2 + " + "
+                + mmc + "e⁻ → " + cCatodo + catodo.getSimbolo();
+
+        String global = cAnodo + anodo.getSimbolo() + " + "
+                + cCatodo + catodo.getSimbolo() + "⁺" + n2 + " → "
+                + cAnodo + anodo.getSimbolo() + "⁺" + n1 + " + "
+                + cCatodo + catodo.getSimbolo();
+
+        return "ÂNODO (oxidação): " + an +
+               "\nCÁTODO (redução): " + cat +
+               "\nREAÇÃO GLOBAL: " + global;
     }
 }
