@@ -16,19 +16,25 @@ public class PilhaCalculator {
 
     public static ResultadoPilha avaliarPilha(Metal m1, Metal m2) {
 
+        // MESMA ESPÉCIE = pilha não existe
         if (m1.getId() == m2.getId()) {
             return new ResultadoPilha(null, null, 0, false);
         }
 
+        // Maior potencial = cátodo (redução)
         Metal catodo = m1.getPotencialReducao() > m2.getPotencialReducao() ? m1 : m2;
-        Metal anodo = (catodo == m1) ? m2 : m1;
+        Metal anodo  = (catodo == m1) ? m2 : m1;
+
 
         double potencial = catodo.getPotencialReducao() - anodo.getPotencialReducao();
+
+        // Espontânea se o potencial for positivo
         boolean espontanea = potencial > 0;
 
         return new ResultadoPilha(anodo, catodo, potencial, espontanea);
     }
 
+    // --------------- BALANCEAMENTO ---------------
     private static int mdc(int a, int b) {
         while (b != 0) {
             int resto = a % b;
@@ -44,11 +50,11 @@ public class PilhaCalculator {
 
     public static String montarReacao(Metal anodo, Metal catodo) {
 
-        int n1 = anodo.getValencia();
-        int n2 = catodo.getValencia();
+        int n1 = anodo.getValencia(); // oxidação
+        int n2 = catodo.getValencia(); // redução
         int mmc = mmc(n1, n2);
 
-        int cAnodo = mmc / n1;
+        int cAnodo  = mmc / n1;
         int cCatodo = mmc / n2;
 
         String an = cAnodo + anodo.getSimbolo() + " → "
