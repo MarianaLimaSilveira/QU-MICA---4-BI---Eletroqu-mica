@@ -52,9 +52,9 @@ public class Main {
                 System.out.printf("ÂNODO (oxida):  %s (%s)\n\n",
                         resultado.anodo.getNome(), resultado.anodo.getSimbolo());
 
-                System.out.printf("POTENCIAL DA PILHA (E°pilha) = %.2f V\n\n",
+                //sempre mostra o sinal (+ ou -)
+                System.out.printf("POTENCIAL DA PILHA (E°pilha) = %+.2f V\n\n",
                         resultado.potencialPilha);
-
 
                 if (resultado.espontanea) {
                     System.out.println("A pilha é ESPONTÂNEA.");
